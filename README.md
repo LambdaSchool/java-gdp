@@ -4,7 +4,7 @@ The top 100 economies in the world are provided in the JSON file. We will be rev
 
 # Instructions
 
-Set up an H2 data base to hold the data for countries and their Gross Domestic Projects. Use the provided JSON file to upload your data. The data contains two fields
+Set up an H2 data base to hold the data for countries and their Gross Domestic Products. Use the provided JSON file to upload your data. The data contains two fields
 * The Country Name
 * The GDP in millions
 
