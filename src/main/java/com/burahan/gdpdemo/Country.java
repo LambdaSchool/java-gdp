@@ -11,7 +11,7 @@ import javax.persistence.Id;
 public class Country
 {
     private @Id @GeneratedValue Long id;
-    private String countryName;
+    private String country;
     private Long gdp;
 
     public Country()
@@ -19,9 +19,9 @@ public class Country
         // default constructor
     }
 
-    public Country(String countryName, Long gdp)
+    public Country(String country, Long gdp)
     {
-        this.countryName = countryName;
+        this.country = country;
         this.gdp = gdp;
     }
 }
