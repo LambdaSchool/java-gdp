@@ -1,5 +1,7 @@
 package com.burahan.gdpdemo;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -55,22 +57,62 @@ public class CountryController
         Long runningTotal = 0L;
         for (Country c : cList)
         {
+//            System.out.println(c.getGdp());
             runningTotal += c.getGdp();
         }
         return runningTotal;
     }
 
-    @GetMapping("/gdp/{country name}")
-    public Country findOneByGDP(@PathVariable String country)
+    /*
+        vv Csaba's Code vv
+        Ask John about why creating a new instance of
+        Country in the route below, that there is no id
+        or why the id field is null
+     */
+//    @GetMapping("/countries/total")
+//    public List<Country> economy2() {
+//        List<Country> totalGDP = new ArrayList<>();
+//
+//        Country all = new Country();
+//
+//        Long total = 0L;
+//        for (Country g: cRepo.findAll()) {
+//            total += g.getGdp();
+//        }
+//
+//        all.setCountry("Total");
+//        all.setGdp(total);
+//        System.out.println(all.getId());
+//        totalGDP.add(all);
+//        return totalGDP;
+//    }
+
+    @GetMapping("/gdp/{country}")
+    public ObjectNode findOneByGDP(@PathVariable String country)
     {
         List<Country> cList = cRepo.findAll();
+//        Country foundCountry;
         for (Country c : cList)
         {
-            if (c.getCountry().equals(country))
+            if (c.getCountry().equalsIgnoreCase(country))
             {
-                return c;
+//                ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+//                return ow.writeValueAsString(c)
+                System.out.println(c);
+                ObjectMapper mapper = new ObjectMapper();
+                ObjectNode totalGDP = mapper.createObjectNode();
+                totalGDP.put("id", c.getId());
+                totalGDP.put("country", c.getCountry());
+                totalGDP.put("gdp", c.getGdp());
+
+                CountryLog message = new CountryLog("Checked GDP of " + c.getCountry());
+                rt.convertAndSend(GdpDemoApplication.QUEUE_NAME, message.toString());
+                log.info("Your presence has been noted");
+
+                return totalGDP;
             }
         }
+
 
         return null;
     }
